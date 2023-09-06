@@ -3,7 +3,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Callb
 import requests
 from bs4 import BeautifulSoup
 
-TOKEN = "nope, its my token"
+TOKEN = "6671093894:AAGksrgUpFWMUkYhPEbofhW3nhUlYOfRWsQ"
 TARGET_CUR = ["USD", "EUR", "CHF", "JPY", "GBP"]
 
 currency_rates = {}
@@ -87,9 +87,16 @@ def handle_text(update: Update, context: CallbackContext) -> None:
             if selected_currency in TARGET_CUR:
                 rate = currency_rates[selected_currency]
                 converted_amount = amount * rate
-                update.message.reply_text(f'{amount} {selected_currency} дорівнює {converted_amount} UAH')
-                user_states[update.message.chat_id] = SELECTING_ACTION
-                start(update, context)  
+                if selected_currency == "JPY":
+                    rate = currency_rates[selected_currency]
+                    converted_amount = (amount * rate)/10
+                    update.message.reply_text(f'{amount} {selected_currency} дорівнює {converted_amount} UAH')
+                    start(update, context)  
+
+                else:
+                    update.message.reply_text(f'{amount} {selected_currency} дорівнює {converted_amount} UAH')
+                    user_states[update.message.chat_id] = SELECTING_ACTION
+                    start(update, context)  
             else:
                 update.message.reply_text('Обрана валюта не знайдена.')
         except ValueError:
